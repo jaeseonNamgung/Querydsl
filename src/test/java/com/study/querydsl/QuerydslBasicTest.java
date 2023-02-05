@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import static com.study.querydsl.entity.QMember.member;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -55,11 +56,12 @@ public class QuerydslBasicTest {
     @Test
     void startQuerydsl(){
 
-        QMember m = new QMember("m");
+        // QMember m = new QMember("m");
+        // QMember m = QMember.member;
 
-        Member findMember = queryFactory.select(m)
-                .from(m)
-                .where(m.username.eq("member1")) // 파라미터 바인딩 처리
+        Member findMember = queryFactory.select(member)
+                .from(member)
+                .where(member.username.eq("member1")) // 파라미터 바인딩 처리
                 .fetchOne();
         assertThat(findMember.getUsername()).isEqualTo("member1");
     }
