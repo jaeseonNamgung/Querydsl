@@ -62,64 +62,35 @@ public class QuerydslBasicTest {
         em.flush();
         em.clear();
     }
-
+    
     @Test
-    void dynamicQuery_BooleanBuilder(){
-        String usernameParam = "member1";
-        Integer ageParam = 10;
+    void bulkUpdate(){
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
 
-        List<Member> result = searchMember1(usernameParam, ageParam);
-        assertThat(result.size()).isEqualTo(1);
-    }
-
-    private List<Member> searchMember1(String usernameCond, Integer ageCond) {
-
-        BooleanBuilder builder = new BooleanBuilder();
-        if(usernameCond != null){
-            builder.and(member.username.eq(usernameCond));
-        }
-
-        if (ageCond != null){
-            builder.and(member.age.eq(ageCond));
-        }
-
-        return queryFactory
-                .selectFrom(member)
-                .where(builder)
-                .fetch();
+        em.flush();
+        em.clear();
     }
 
     @Test
-    void dynamicQuery_WhereParam(){
-        String usernameParam = "member1";
-        Integer ageParam = 10;
-
-        List<Member> result = searchMember2(usernameParam, ageParam);
-        assertThat(result.size()).isEqualTo(1);
+    void bulkAdd(){
+        long count = queryFactory
+                .update(member)
+                .set(member.age, member.age.multiply(2))
+                .execute();
     }
 
-    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
-        return queryFactory
-                .selectFrom(member)
-                .where(usernameEq(usernameCond), ageEq(ageCond))
-                //.where(allEq(usernameCond, ageCond))
-                .fetch();
+    @Test
+    void bulkDelete(){
+        queryFactory
+                .delete(member)
+                .where(member.age.eq(18))
+                .execute();
     }
 
-    private BooleanExpression ageEq(Integer ageCond) {
-        return ageCond != null ? member.age.eq(ageCond):null;
-    }
-
-    private BooleanExpression usernameEq(String usernameCond) {
-        if(usernameCond == null){
-            return null;
-        }
-        return member.username.eq(usernameCond);
-    }
-
-    private BooleanExpression allEq(String usernameCond, Integer ageCond){
-        return usernameEq(usernameCond).and(ageEq(ageCond));
-    }
 
 }
 
